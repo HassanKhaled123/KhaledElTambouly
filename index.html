@@ -19,14 +19,32 @@
   <script>
     (function() {
       var ua = navigator.userAgent || navigator.vendor || window.opera;
-      var isMessenger = (ua.indexOf("Messenger") > -1 || ua.indexOf("FBAN") > -1 || ua.indexOf("FBAV") > -1);
-
-      if (isMessenger && ua.indexOf("Android") > -1) {
-        var currentUrl = window.location.href;
-        var cleanUrl = currentUrl.replace(/^https?:\/\//, "");
-        window.location.href = "intent://" + cleanUrl + "#Intent;scheme=https;package=com.android.chrome;end";
+      var isMessenger = (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1);
+      
+      if (isMessenger) {
+        // We create a hidden anchor and trigger a 'download' to force the external browser
+        var anchor = document.createElement('a');
+        anchor.href = window.location.href;
+        anchor.download = "opening_in_browser";
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
       }
     })();
+    // ---------------------------------
+
+    window.addEventListener('load', function(ev) {
+      _flutter.loader.loadEntrypoint({
+        serviceWorker: {
+          serviceWorkerVersion: serviceWorkerVersion,
+        },
+        onEntrypointLoaded: function(engineInitializer) {
+          engineInitializer.initializeEngine().then(function(appRunner) {
+            appRunner.runApp();
+          });
+        }
+      });
+    });
   </script>
 </head>
 <body>
