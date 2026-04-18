@@ -1,38 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script>
-    (function() {
-      var ua = navigator.userAgent || navigator.vendor || window.opera;
-      var isMessenger = /FBAN|FBAV|Messenger/i.test(ua);
-      
-      if (isMessenger && /Android/i.test(ua)) {
-        var cleanUrl = window.location.href.replace(/^https?:\/\//, "");
-        window.location.replace("intent://" + cleanUrl + "#Intent;scheme=https;package=com.android.chrome;end");
-      }
-    })();
-  </script>
-
   <base href="/KhaledElTambouly/">
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Bond Dental Clinic">
-
-  <title>Bond Dental Clinic</title>
-  <link rel="icon" type="image/png" href="favicon.png"/>
-  <link rel="manifest" href="manifest.json">
-</head>
-<body>
-  <script src="flutter_bootstrap.js" async></script>
-</body>
-</html><!DOCTYPE html>
-<html>
-<head>
-  <base href="/KhaledElTambouly/">
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Bond Dental Clinic">
+  <meta name="description" content="KhaledElTambouly - Responsive Web Interface">
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -41,41 +13,59 @@
 
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>KhaledELTambouly</title>
+  <title>Bond Dental Clinic</title>
   <link rel="manifest" href="manifest.json">
 
   <script>
     (function() {
       var ua = navigator.userAgent || navigator.vendor || window.opera;
-      var isMessenger = (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1);
-      
+      var isMessenger = (ua.indexOf("Messenger") > -1 || ua.indexOf("FBAN") > -1 || ua.indexOf("FBAV") > -1);
+
       if (isMessenger) {
-        // We create a hidden anchor and trigger a 'download' to force the external browser
-        var anchor = document.createElement('a');
-        anchor.href = window.location.href;
-        anchor.download = "opening_in_browser";
-        document.body.appendChild(anchor);
-        anchor.click();
-        document.body.removeChild(anchor);
+        // ANDROID: Force open in Chrome using an Intent
+        if (ua.indexOf("Android") > -1) {
+          var currentUrl = window.location.href;
+          // Clean the URL to remove the protocol for the intent string
+          var cleanUrl = currentUrl.replace(/^https?:\/\//, "");
+          window.location.href = "intent://" + cleanUrl + "#Intent;scheme=https;package=com.android.chrome;end";
+        } 
+        // iOS: We cannot force Safari, so we show an alert or custom UI
+        else if (ua.indexOf("iPhone") > -1 || ua.indexOf("iPad") > -1 || ua.indexOf("iPod") > -1) {
+          // Optional: You could inject a CSS banner here instead of an alert
+          console.log("iOS Messenger detected. User must manually open in Safari.");
+        }
       }
     })();
-    // ---------------------------------
-
-    window.addEventListener('load', function(ev) {
-      _flutter.loader.loadEntrypoint({
-        serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            appRunner.runApp();
-          });
-        }
-      });
-    });
   </script>
+
+  <style>
+    /* Optional: Style for an iOS 'Open in Browser' banner */
+    #ios-messenger-notice {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: #0078FF;
+      color: white;
+      text-align: center;
+      padding: 12px;
+      z-index: 9999;
+      font-family: sans-serif;
+    }
+  </style>
 </head>
 <body>
+  <div id="ios-messenger-notice">
+    For the best experience, tap <b>...</b> and select <b>Open in Safari</b>.
+  </div>
+
+  <script>
+    // Show the banner only if on iOS Messenger
+    var ua = navigator.userAgent || navigator.vendor || window.opera;
+    if ((ua.indexOf("Messenger") > -1 || ua.indexOf("FBAN") > -1) && /iPad|iPhone|iPod/.test(ua)) {
+      document.getElementById('ios-messenger-notice').style.display = 'block';
+    }
+  </script>
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
